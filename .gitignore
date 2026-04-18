@@ -1,0 +1,15 @@
+# Banco de dados local (não sobe para o cloud)
+data/historico.db
+data/relatorios/
+
+# Uploads temporários
+*.tmp
+__pycache__/
+*.pyc
+*.pyo
+.env
+
+# Arquivos de dados sensíveis
+data/entradas/*.pdf
+data/entradas/*.xlsx
+data/entradas/*.csv

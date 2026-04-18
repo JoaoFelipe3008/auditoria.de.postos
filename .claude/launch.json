@@ -1,0 +1,23 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Auditoria de Postos — Streamlit (port 8503)",
+      "runtimeExecutable": "streamlit",
+      "runtimeArgs": ["run", "app/ui/dashboard.py", "--server.port", "8503", "--server.headless", "true"],
+      "port": 8503
+    },
+    {
+      "name": "Static Site — npx serve (port 3000)",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", ".", "--listen", "3000", "--no-clipboard"],
+      "port": 3000
+    },
+    {
+      "name": "Static Site — Python http.server (port 8080)",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8080"],
+      "port": 8080
+    }
+  ]
+}

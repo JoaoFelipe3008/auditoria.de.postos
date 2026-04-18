@@ -1,0 +1,23 @@
+
+  You can now view your Streamlit app in your browser.
+
+  Local URL: http://localhost:8507
+  Network URL: http://10.0.0.199:8507
+  External URL: http://177.223.37.109:8507
+
+C:\Users\aaadr\AppData\Local\Programs\Python\Python39\lib\site-packages\openpyxl\styles\stylesheet.py:237: UserWarning: Workbook contains no default style, apply openpyxl's default
+  warn("Workbook contains no default style, apply openpyxl's default")
+C:\Users\aaadr\AppData\Local\Programs\Python\Python39\lib\site-packages\openpyxl\styles\stylesheet.py:237: UserWarning: Workbook contains no default style, apply openpyxl's default
+  warn("Workbook contains no default style, apply openpyxl's default")
+Nenhum registro de caixa fornecido para auditoria.
+Nenhum registro de aferição fornecido para auditoria.
+2026-04-18 12:53:47.338 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-04-18 12:53:47.441 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
