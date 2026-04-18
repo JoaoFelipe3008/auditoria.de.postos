@@ -406,6 +406,8 @@ if btn_exemplo:
             )
         _historico.salvar(resultado, caixa_regs, lmc_regs)
         st.session_state["resultado"] = resultado
+        st.session_state["caixa_regs"] = caixa_regs
+        st.session_state["lmc_regs"] = lmc_regs
         st.session_state["origem"] = "exemplo"
 
 # ---------------------------------------------------------------------------
@@ -462,6 +464,8 @@ if btn_analisar:
             )
             _historico.salvar(resultado, caixa_regs, lmc_regs)
             st.session_state["resultado"] = resultado
+            st.session_state["caixa_regs"] = caixa_regs
+            st.session_state["lmc_regs"] = lmc_regs
             st.session_state["origem"] = "upload"
 
             # Feedback pós-leitura para PDF
@@ -600,7 +604,81 @@ if not resultado.divergencias:
     )
 
 # ---------------------------------------------------------------------------
-# 5. DOWNLOAD DOS RELATÓRIOS
+# 5. DETALHE POR OPERADOR (CAIXA)
+# ---------------------------------------------------------------------------
+
+_caixa_regs = st.session_state.get("caixa_regs", [])
+if _caixa_regs:
+    st.markdown("---")
+    st.markdown("### 💰 Detalhe de Caixa por Operador")
+    import pandas as pd
+    try:
+        import plotly.express as px
+        _plotly_ok = True
+    except ImportError:
+        _plotly_ok = False
+
+    _rows_cx = []
+    for r in _caixa_regs:
+        div = r.total_informado - (r.dinheiro + r.cartao + r.pix - r.sangria)
+        _rows_cx.append({
+            "Operador": r.operador,
+            "Apresentado (R$)": r.total_informado,
+            "Apurado (R$)": r.dinheiro + r.cartao + r.pix - r.sangria,
+            "Diferença (R$)": round(div, 2),
+        })
+    df_cx_atual = pd.DataFrame(_rows_cx).sort_values("Diferença (R$)", key=abs, ascending=False)
+
+    if _plotly_ok:
+        fig_cx = px.bar(
+            df_cx_atual, x="Operador", y="Diferença (R$)",
+            color="Diferença (R$)",
+            color_continuous_scale=["#16a34a", "#f9f9f9", "#dc2626"],
+            color_continuous_midpoint=0,
+        )
+        fig_cx.add_hline(y=0, line_color="gray", line_width=1)
+        fig_cx.update_layout(height=320, margin=dict(t=10, b=10), showlegend=False)
+        st.plotly_chart(fig_cx, use_container_width=True)
+
+    df_cx_atual["Apresentado (R$)"] = df_cx_atual["Apresentado (R$)"].map("R$ {:,.2f}".format)
+    df_cx_atual["Apurado (R$)"]     = df_cx_atual["Apurado (R$)"].map("R$ {:,.2f}".format)
+    df_cx_atual["Diferença (R$)"]   = df_cx_atual["Diferença (R$)"].map("R$ {:,.2f}".format)
+    st.dataframe(df_cx_atual, use_container_width=True, hide_index=True)
+
+# ---------------------------------------------------------------------------
+# 5b. DETALHE POR PRODUTO (LMC)
+# ---------------------------------------------------------------------------
+
+_lmc_regs = st.session_state.get("lmc_regs", [])
+if _lmc_regs:
+    import pandas as pd
+    _rows_lmc = {}
+    for r in _lmc_regs:
+        ps = r.perdas_sobras if r.perdas_sobras else (r.estoque_inicial + r.entradas - r.vendas - r.estoque_final)
+        if r.tanque not in _rows_lmc:
+            _rows_lmc[r.tanque] = {"Produto": r.tanque, "Perdas/Sobras (L)": 0.0, "Dias": 0}
+        _rows_lmc[r.tanque]["Perdas/Sobras (L)"] += ps
+        _rows_lmc[r.tanque]["Dias"] += 1
+    df_lmc_atual = pd.DataFrame(list(_rows_lmc.values())).sort_values("Perdas/Sobras (L)", key=abs, ascending=False)
+
+    if not df_lmc_atual.empty and df_lmc_atual["Perdas/Sobras (L)"].abs().sum() > 0:
+        st.markdown("---")
+        st.markdown("### 📦 Perdas e Sobras por Produto (LMC)")
+        if _plotly_ok:
+            fig_lmc = px.bar(
+                df_lmc_atual, x="Produto", y="Perdas/Sobras (L)",
+                color="Perdas/Sobras (L)",
+                color_continuous_scale=["#dc2626", "#f9f9f9", "#16a34a"],
+                color_continuous_midpoint=0,
+            )
+            fig_lmc.add_hline(y=0, line_color="gray", line_width=1)
+            fig_lmc.update_layout(height=300, margin=dict(t=10, b=10), showlegend=False)
+            st.plotly_chart(fig_lmc, use_container_width=True)
+        df_lmc_atual["Perdas/Sobras (L)"] = df_lmc_atual["Perdas/Sobras (L)"].map("{:,.2f} L".format)
+        st.dataframe(df_lmc_atual, use_container_width=True, hide_index=True)
+
+# ---------------------------------------------------------------------------
+# 6. DOWNLOAD DOS RELATÓRIOS
 # ---------------------------------------------------------------------------
 
 st.markdown("---")
